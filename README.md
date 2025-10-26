@@ -115,7 +115,7 @@ OMP_NUM_THREADS=1 python -m torch.distributed.launch --nproc_per_node=4 main_lin
     --finetune can_noise_baseline/checkpoint-49.pth --epochs 90 --blr 0.1 --weight_decay 0.0 \
     --dist_eval --data_path  path_to_imagenet --output_dir mae_baseline_lineval
 ```
-# Running CAN: Step-by-Step Instructions
+# Running CAN: Step-by-Step Instructions (on CPU)
 
 ## Step 1: Activate Environment
 ```bash
@@ -170,6 +170,7 @@ Classification Report:
    macro avg       0.82      0.67      0.67       624
 weighted avg       0.80      0.75      0.71       624
 ```
+
 
 
 
