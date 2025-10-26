@@ -7,6 +7,22 @@ Official PyTorch implementation of ["A simple, efficient and scalable contrastiv
 </p>
 
 - The original implementation was in JAX+TPU. This re-implementation is in PyTorch+GPU.
+  ##File Connections and Tasks
+| File Name            | Connected Files                                                                                            | Tasks                                                                  |
+| -------------------- | ---------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| engine_finetune.py   | main_finetune.py, main_linprobe.py, model_vit.py                                                           | Fine-tuning loop, loss computation, metrics logging                    |
+| engine_pretrain.py   | main_pretrain.py, model_vit.py, model_mae.py, loss_contrastive.py, util_contrastive.py                     | Pre-training loop, MAE and contrastive loss computation, backward pass |
+| loss_contrastive.py  | engine_pretrain.py, util_contrastive.py                                                                    | Defines contrastive loss functions                                     |
+| main_finetune.py     | engine_finetune.py, model_vit.py                                                                           | Sets up fine-tuning, parses arguments, logging, loads dataset          |
+| main_linprobe.py     | engine_finetune.py, model_vit.py                                                                           | Linear probing on pre-trained features, argument parsing               |
+| main_pretrain.py     | engine_pretrain.py, model_vit.py, model_mae.py, loss_contrastive.py, util_contrastive.py                   | Entry point for pre-training, argument parsing, environment setup      |
+| model_mae.py         | engine_pretrain.py, main_pretrain.py                                                                       | Defines MAE architecture based on ViT                                  |
+| model_vit.py         | engine_pretrain.py, engine_finetune.py, main_pretrain.py, main_finetune.py, main_linprobe.py, model_mae.py | Defines Vision Transformer (ViT) architecture                          |
+| submitit_finetune.py | main_finetune.py                                                                                           | Job submission for fine-tuning on cluster                              |
+| submitit_linprobe.py | main_linprobe.py                                                                                           | Job submission for linear probing on cluster                           |
+| submitit_pretrain.py | main_pretrain.py                                                                                           | Job submission for pre-training on cluster                             |
+| util_contrastive.py  | engine_pretrain.py, loss_contrastive.py                                                                    | Utilities for contrastive loss, helper functions                       |
+
 
 ## Requirements
 - Instructions for creating conda enviroment. <br>
@@ -67,3 +83,4 @@ This repo is heavily inspired by MAE repo https://github.com/facebookresearch/ma
   journal={arXiv preprint arXiv:2210.16870},
   year={2022}
 }
+
