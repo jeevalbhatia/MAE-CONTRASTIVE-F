@@ -6,7 +6,7 @@ Official PyTorch implementation of ["A simple, efficient and scalable contrastiv
 <img src="can.png" width="80%" style={text-align: center;}/>
 </p>
 
-- The original implementation was in JAX+TPU. This re-implementation is in PyTorch+GPU.
+- I have modified the code a little to test it on a user system using CPU on a small chest x-ray data set.s The original GitHub repository is: https://github.com/shlokk/mae-contrastive
   ---
 
 ## Table 1: File Connections and Tasks
@@ -115,22 +115,64 @@ OMP_NUM_THREADS=1 python -m torch.distributed.launch --nproc_per_node=4 main_lin
     --finetune can_noise_baseline/checkpoint-49.pth --epochs 90 --blr 0.1 --weight_decay 0.0 \
     --dist_eval --data_path  path_to_imagenet --output_dir mae_baseline_lineval
 ```
+# Running CAN: Step-by-Step Instructions
 
-## Pre-trained models <br>
-- We have released pretrained models for 50 epoch pretraining here(https://drive.google.com/file/d/18yVmZmKenM-cZh5o6hmcswvS2ePhuDk_/view?usp=sharing). <br>
-- We will be releasing longer epoch training (800 and 1600 epochs) soon.
+## Step 1: Activate Environment
+```bash
+conda activate can
+cd "path_to_mae-contrastive_directory"
+```
+
+## Step 2: Run Pretraining Script
+```bash
+python main_pretrain.py --data_path "path_to_dataset" \
+                        --output_dir test_can_output \
+                        --log_dir test_can_logs \
+                        --batch_size 2 \
+                        --epochs 1 \
+                        --input_size 224 \
+                        --num_workers 0 \
+                        --device cpu
+```
+
+## Step 3: Create a Tiny Dataset (Optional)
+```bash
+python quick_chestxray.py
+```
+
+## Step 4: Verify Output
+```bash
+dir test_can_output
+dir test_can_logs
+```
+**Expected output:**
+- `.pth` checkpoint files in `test_can_output`
+- TensorBoard logs in `test_can_logs`
+
+## Step 5: Visualize Training Logs
+```bash
+tensorboard --logdir test_can_logs
+```
+Open the browser link (usually `http://localhost:6006`) to view metrics.
+
+## Step 6: Run Linear Evaluation
+```bash
+python test_chestxray.py --checkpoint_path "test_can_output/checkpoint-0.pth"
+```
+**Expected output:**
+```
+Test Accuracy: 74.52%
+Classification Report:
+              precision    recall  f1-score   support
+      NORMAL       0.93      0.35      0.50       234
+   PNEUMONIA       0.72      0.98      0.83       390
+    accuracy                           0.75       624
+   macro avg       0.82      0.67      0.67       624
+weighted avg       0.80      0.75      0.71       624
+```
 
 
-This repo is heavily inspired by MAE repo https://github.com/facebookresearch/mae.
 
-## Citation
-```bibtex
-@article{mishra2022simple,
-  title={A simple, efficient and scalable contrastive masked autoencoder for learning visual representations},
-  author={Mishra, Shlok and Robinson, Joshua and Chang, Huiwen and Jacobs, David and Sarna, Aaron and Maschinot, Aaron and Krishnan, Dilip},
-  journal={arXiv preprint arXiv:2210.16870},
-  year={2022}
-}
 
 
 
